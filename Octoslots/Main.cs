@@ -78,6 +78,7 @@ namespace Octoslots
         public static bool[] autoRefresh = new bool[8];
         public static byte[][] name = new byte[8][];
         public static uint[] menuCheck = new uint[4];
+        
 
 
         private void Form1_Load(object sender, EventArgs e)
@@ -190,8 +191,8 @@ namespace Octoslots
             //get player's mii name (WILL be used when applicable on GUI)
             miiName = yourMiiName();
 
-            //enable octohax if first player is checked
-            if (checkBoxP1.Checked)
+            //enable octohax if the first slot is an Octoling
+            if (autoRefresh[0])
                 patchOctohax(1);
         }
 
@@ -273,19 +274,23 @@ namespace Octoslots
         //TIMER FUNCTION; runs at start and stops upon disconnection
         private void autoRefreshTimer_Tick(object sender, EventArgs e)
         {
-            //syncs checks with the bool array
-            checkVerify();
-
-            //auto pokes main player when checked
-            if (mainPlayerPokeCheck.Checked && mainPlayerPokeCheck.Enabled)
-                mainNameChecker();
-
             //switches between octoling models in menus
             menuOctohax();
 
-            //reads names to display them on the gui
-            getNames();
+            uint matchCheck = Gecko.peek(0x10707EA0); //stops checking for things when a map is loaded
+
+            if (matchCheck == 0x3F800000) //disables names and checks that aren't needed while on menus
+            {
+                //syncs checks with the bool array
+                checkVerify();
+                //reads names to display them on the gui
+                getNames();
+            }
             
+            //auto pokes main player when checked
+            if (mainPlayerPokeCheck.Checked && mainPlayerPokeCheck.Enabled && matchCheck == 0x3F800000)
+                mainNameChecker();
+
             //switch 
             if (SinglePlayerForm.SPPoke == false)
             {
@@ -611,16 +616,21 @@ namespace Octoslots
 
         //
         private void mainPlayerPokeCheck_CheckedChanged(object sender, EventArgs e) { mainNameDelay = 7; }
-
+        
         private void checkVerify()
         {
+            if (miiName == yourMiiName())
+            {
+                autoRefresh[0] = checkBoxP1.Checked;
+            }
+            else
             autoRefresh[0] = checkBoxP1.Checked;
             autoRefresh[1] = checkBoxP2.Checked;
             autoRefresh[2] = checkBoxP3.Checked;
             autoRefresh[3] = checkBoxP4.Checked;
             autoRefresh[4] = checkBoxP5.Checked;
             autoRefresh[5] = checkBoxP6.Checked;
-            autoRefresh[5] = checkBoxP7.Checked;
+            autoRefresh[6] = checkBoxP7.Checked;
             autoRefresh[7] = checkBoxP8.Checked;
         }
 
@@ -711,7 +721,7 @@ namespace Octoslots
         {
             if (Gecko.peek(0x106E5318) == 0x00000000) //using a new address that's hopefully more consistant -Bkool
             {
-                //choices based on SpringlePlayerForm combo box texts. Each string[][] is for each player and each combo box.
+                //choices based on SinglePlayerForm combo box texts. Each string[][] is for each player and each combo box.
                 for (uint i = 0; i < 4; i++)
                 {
                     switch (SinglePlayerForm.SPOctoSlot[i][0]) //[player number] [combobox number]
