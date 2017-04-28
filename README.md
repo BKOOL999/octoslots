@@ -1,7 +1,7 @@
 # Octoslots for Splatoon 2.12.0
 
 <p align="center">
-  <img src="http://i.imgur.com/vpfeuJC.png" alt="Octoslots"/>
+  <img src="http://i.imgur.com/3pDTlqV.png" alt="Octoslots"/>
 </p>
 
 Octoslots is an alternative to Octohax that lets you poke Octoling gender clientside, so only you can see them.  This also allows you to play with Octolings and Inklings on the same map, as well as working Octotentacles!  In addition, you can sync up your games while playing with friends so that all genders are consistant for each player.
